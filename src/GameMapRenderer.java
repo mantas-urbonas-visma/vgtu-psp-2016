@@ -1,7 +1,4 @@
-
-
 public class GameMapRenderer {
-
 	
 	GameMap gameMap;
 	Pacman pacman;
@@ -23,11 +20,7 @@ public class GameMapRenderer {
 					drawPacman();
 				}
 				else
-				if (y == ghosts[0].y && x == ghosts[0].x){
-					drawGhost();
-				}
-				else
-				if (y == ghosts[1].y && x == ghosts[1].x){
+				if (isGhost(x, y)){
 					drawGhost();
 				}
 				else{
@@ -38,6 +31,13 @@ public class GameMapRenderer {
 		}
 	}
 	
+	private boolean isGhost(int x, int y) {
+		for (int i=0; i<ghosts.length; i++)
+			if (ghosts[i].x == x && ghosts[i].y == y)
+				return true;
+		
+		return false;
+	}
 
 	private static void drawNewLine() {
 		System.out.println();

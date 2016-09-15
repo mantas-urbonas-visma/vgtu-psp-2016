@@ -1,4 +1,3 @@
-
 public class Ghost {
 	int x;
 	int y;

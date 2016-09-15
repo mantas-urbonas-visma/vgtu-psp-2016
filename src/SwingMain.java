@@ -15,25 +15,23 @@ import javax.swing.SwingUtilities;
 public class SwingMain extends JFrame implements KeyListener{
 
 	GameMap gameMap = new GameMap();
-	
 	Pacman pacman = new Pacman(5, 5);
-	
-	Ghost ghosts[] = { new Ghost(20,7, 0,1), new Ghost(14,10,1,0) };
-		
+	Ghost ghosts[] = { new Ghost(20, 7, 0, 1), new Ghost(14, 10, 1, 0) };
 	GameRules gameRules = new GameRules(gameMap, pacman, ghosts);
-
+	SwingRenderer renderer;
+		
 	private BufferedImage pacmanImage;
-
-	private SwingRenderer renderer;
+	private BufferedImage ghostImage;
 	
 	public SwingMain() throws FileNotFoundException, IOException{
 		super.setPreferredSize(new Dimension(1200,  600));
 		super.pack();
 		super.setVisible(true);
 		
-		pacmanImage = ImageIO.read(new FileInputStream("E:/prj/vgtu/2016/pacman-open.png"));
+		pacmanImage = ImageIO.read(new FileInputStream("pacman-open.png"));
+		ghostImage = ImageIO.read(new FileInputStream("ghost.png"));
 		
-		renderer = new SwingRenderer(gameMap, pacman, pacmanImage);
+		renderer = new SwingRenderer(gameMap, pacman, ghosts, pacmanImage, ghostImage);
 		
 		this.addKeyListener(this);
 	}
@@ -54,11 +52,7 @@ public class SwingMain extends JFrame implements KeyListener{
 			public void run() {
 				try {
 					new SwingMain();
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -67,14 +61,10 @@ public class SwingMain extends JFrame implements KeyListener{
 
 	@Override
 	public void keyPressed(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -95,6 +85,11 @@ public class SwingMain extends JFrame implements KeyListener{
 		case 'q':
 			System.exit(1);;
 		}
+		
+		gameRules.moveGhosts();
+		
+		if (gameRules.isGameOver())
+			System.exit(1);
 		
 		this.repaint();
 	}

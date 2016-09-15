@@ -1,21 +1,14 @@
-import java.io.IOException;
-
 public class Main {
 
-	
-	public static void main(String args[]) throws IOException{
+	public static void main(String args[]) throws Exception{
 		GameMap gameMap = new GameMap();
-		
 		Pacman pacman = new Pacman(5, 5);
-		
 		Ghost ghosts[] = { new Ghost(20,7, 0,1), new Ghost(14,10,1,0) };
 		
 		GameMapRenderer renderer = new GameMapRenderer(gameMap, pacman, ghosts);
-		
 		GameRules gameRules = new GameRules(gameMap, pacman, ghosts);
 		
 		while(true){
-			
 			renderer.render();
 
 			if (gameRules.isGameOver())
@@ -37,23 +30,16 @@ public class Main {
 				break;
 			case 'q':
 				return;
-				
 			}
-			
 			gameRules.moveGhosts();
-
 		}
 	}
-
 
 	private static void tryMovePacman(GameMap gameMap, Pacman pacman, int dy, int dx) {
 		if (!gameMap.isWall(pacman.y + dy,  pacman.x + dx)){
 			pacman.x += dx;
 			pacman.y += dy;
-		}
-		
+		}		
 	}
 
-
-	
 }

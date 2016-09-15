@@ -1,6 +1,4 @@
-
 public class GameRules {
-
 	private GameMap gameMap;
 	private Ghost[] ghosts;
 	private Pacman pacman;
@@ -12,15 +10,8 @@ public class GameRules {
 	}
 
 	public void moveGhosts() {
-		for (int i=0; i<ghosts.length; i++){
-			if (randomChangeHappened())
-				ghosts[i].swapMovementVectors();;
-
-			if (gameMap.isWall(ghosts[i].y+ghosts[i].dy, ghosts[i].x+ghosts[i].dx))
-				ghosts[i].revertMovementVectors();
-			else
-				ghosts[i].move();
-		}
+		for (int i=0; i<ghosts.length; i++)
+			moveGhost(ghosts[i]);
 	}
 
 	public boolean isGameOver() {
@@ -31,8 +22,16 @@ public class GameRules {
 		return false;
 	}
 
-	
+	private void moveGhost(Ghost ghost) {
+		if (randomChangeHappened())
+			ghost.swapMovementVectors();
 
+		if (gameMap.isWall(ghost.y+ghost.dy, ghost.x+ghost.dx))
+			ghost.revertMovementVectors();
+		else
+			ghost.move();
+	}
+	
 	private static boolean randomChangeHappened() {
 		return Math.random()*10 > 8;
 	}
