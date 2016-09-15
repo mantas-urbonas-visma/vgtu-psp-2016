@@ -2,6 +2,18 @@ import java.io.IOException;
 
 public class Main {
 
+	static class Pacman{
+		int x;
+		int y;
+	}
+	
+	static class Ghost{
+		int x;
+		int y;
+		int dx;
+		int dy;
+	}
+	
 	public static void main(String args[]) throws IOException{
 		
 		int MATRIX[][] = {
@@ -31,106 +43,134 @@ public class Main {
 				{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
 		};
 		
-		int pacmanX = 5;
-		int pacmanY = 5;
+		Pacman pacman = new Pacman();
+		pacman.x = 5;
+		pacman.y = 5;
 		
-		int ghost1x = 20;
-		int ghost1y = 7;
+		Ghost ghosts[] = { new Ghost(), new Ghost() };
+		ghosts[0].x = 20;
+		ghosts[0].y = 7;
 		
-		int ghost2x = 14;
-		int ghost2y = 10;
+		ghosts[1].x = 14;
+		ghosts[1].y = 10;
 		
-		int dx1 = 0;
-		int dy1 = 1;
+		ghosts[0].dx = 0;
+		ghosts[0].dy = 1;
 		
-		int dx2 = 1;
-		int dy2 = 0;
+		ghosts[1].dx = 1;
+		ghosts[1].dy = 0;
 		
 		while(true){
 			
 			for (int y=0; y<MATRIX.length; y++){
 				for (int x=0; x<MATRIX[0].length; x++){
-					if (MATRIX[y][x] == 1){
-						System.out.print("#");
+					if (isWall(MATRIX, y, x)){
+						drawWall();
 					}else
-					if (y==pacmanY && x == pacmanX){
-						System.out.print("C");
+					if (y==pacman.y && x == pacman.x){
+						drawPacman();
 					}
 					else
-					if (y == ghost1y && x == ghost1x){
-						System.out.print("$");
+					if (y == ghosts[0].y && x == ghosts[0].x){
+						drawGhost();
 					}
 					else
-					if (y == ghost2y && x == ghost2x){
-						System.out.print("$");
+					if (y == ghosts[1].y && x == ghosts[1].x){
+						drawGhost();
 					}
 					else{
-						System.out.print(" ");
+						drawEmptySpace();
 					}
 				}
-				System.out.println();
+				drawNewLine();
 			}
 			
-			if (pacmanX == ghost1x && pacmanY == ghost1y)
-				return;
-			
-			if (pacmanX == ghost2x && pacmanY == ghost2y)
-				return;
-			
+			for (int i=0 ; i<ghosts.length; i++)
+				if (pacman.x == ghosts[i].x && pacman.y == ghosts[i].y)
+					return;
 			
 			int n = System.in.read();
 			switch(n){
 			case 'a':
-				if (MATRIX[pacmanY][pacmanX-1] == 0)
-					pacmanX--; 
+				tryMovePacman(MATRIX, pacman, 0, -1);
 			break;
 			case 'd':
-				if (MATRIX[pacmanY][pacmanX+1] == 0)
-					pacmanX++;
+				tryMovePacman(MATRIX, pacman, 0, +1);
 				break;
 			case 'w':
-				if (MATRIX[pacmanY-1][pacmanX] == 0)
-					pacmanY--;
+				tryMovePacman(MATRIX, pacman, -1, 0);
 				break;
 			case 's':
-				if (MATRIX[pacmanY+1][pacmanX] == 0)
-					pacmanY++;
+				tryMovePacman(MATRIX, pacman, +1, 0);
 				break;
 			case 'q':
 				return;
 				
 			}
 			
-			if (Math.random()*10 > 8){
-				int t = dx1;
-				dx1=dy1;
-				dy1=t;
-			}
-			
-			if (Math.random()*10 > 8){
-				int t = dx2;
-				dx2=dy2;
-				dy2=t;
-			}
-			
-			if (MATRIX[ghost1y+dy1][ghost1x + dx1]==1){
-				dx1 *= -1;
-				dy1 *= -1;
-			}
-			else{
-				ghost1x+= dx1;
-				ghost1y+= dy1;
+			for (int i=0; i<ghosts.length; i++){
+				if (randomChangeHappened())
+					randomizeGhostDirection(ghosts[i]);
+
+				if (isWall(MATRIX, ghosts[i].y+ghosts[i].dy, ghosts[i].x+ghosts[i].dx))
+					revertGhostDirection(ghosts[i]);
+				else
+					moveGhost(ghosts[i]);
 			}
 
-			if (MATRIX[ghost2y+dy2][ghost2x + dx2]==1){
-				dx2 *= -1;
-				dy2 *= -1;
-			}
-			else{	
-				ghost2x+=dx2;
-				ghost2y+=dy2;
-			}
 		}
+	}
+
+	private static void tryMovePacman(int [][] MATRIX, Pacman pacman, int dy, int dx) {
+		if (MATRIX[pacman.y + dy][pacman.x + dx] == 0){
+			pacman.x += dx;
+			pacman.y += dy;
+		}
+		
+	}
+
+	private static void moveGhost(Ghost ghost) {
+		ghost.x+= ghost.dx;
+		ghost.y+= ghost.dy;
+	}
+
+	private static void revertGhostDirection(Ghost ghost) {
+		ghost.dx *= -1;
+		ghost.dy *= -1;
+	}
+
+	private static void randomizeGhostDirection(Ghost ghost) {
+		int t = ghost.dx;
+		ghost.dx=ghost.dy;
+		ghost.dy=t;
+	}
+
+	private static boolean isWall(int[][] MATRIX, int y, int x) {
+		return MATRIX[y][x]==1;
+	}
+
+	private static boolean randomChangeHappened() {
+		return Math.random()*10 > 8;
+	}
+
+	private static void drawNewLine() {
+		System.out.println();
+	}
+
+	private static void drawEmptySpace() {
+		System.out.print(" ");
+	}
+
+	private static void drawGhost() {
+		System.out.print("$");
+	}
+
+	private static void drawPacman() {
+		System.out.print("C");
+	}
+
+	private static void drawWall() {
+		System.out.print("#");
 	}
 	
 }
