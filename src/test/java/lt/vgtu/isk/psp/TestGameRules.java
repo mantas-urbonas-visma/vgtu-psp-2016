@@ -52,11 +52,12 @@ public class TestGameRules {
 		GameRules gameRules = new GameRules();
 		
 		// when
+		gameRules.setRandomFactor(new MockRandomFactor());
 		gameRules.moveGhosts(gameStage);
 		
 		// then
-		//Assert.assertEquals(2, ghost.x);
-		//Assert.assertEquals(2, ghost.y);
+		Assert.assertEquals(2, ghost.x);
+		Assert.assertEquals(2, ghost.y);
 	}
 	
 	@Test

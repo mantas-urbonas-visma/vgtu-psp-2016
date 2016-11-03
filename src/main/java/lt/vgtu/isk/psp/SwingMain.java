@@ -7,8 +7,8 @@ import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -19,9 +19,12 @@ public class SwingMain extends JFrame implements KeyListener{
 	GameStage gameStage;
 	GameRules gameRules;
 	SwingRenderer renderer;
+	GameSaver gameSaver = new GameSaver();
 		
 	private BufferedImage pacmanImage;
 	private BufferedImage ghostImage;
+	
+	Map<Character, AbstractCommand> commands = new HashMap<>();
 	
 	public SwingMain() throws FileNotFoundException, IOException{
 		super.setPreferredSize(new Dimension(1200,  600));
@@ -34,10 +37,16 @@ public class SwingMain extends JFrame implements KeyListener{
 		
 		this.gameRules = new GameRules();
 	
-		this.gameStage = loadGameStage();
+		this.gameStage = gameSaver.loadGameStage();
 		if (this.gameStage == null)	
-			this.gameStage = createNewGameStage();
+			this.gameStage = gameSaver.createNewGameStage();
 	
+		commands.put('a', new PacmanMoveComand(gameStage, -1, 0));
+		commands.put('d', new  PacmanMoveComand(gameStage, 1, 0));
+		commands.put('w', new  PacmanMoveComand(gameStage, 0, -1));
+		commands.put('s', new  PacmanMoveComand(gameStage, 0, 1));
+		commands.put('q', new ExitCommand());
+		
 		this.addKeyListener(this);
 	}
 
@@ -57,7 +66,7 @@ public class SwingMain extends JFrame implements KeyListener{
 	public void keyReleased(KeyEvent e) {
 		String keyText = KeyEvent.getKeyText(e.getKeyCode());
 		if (keyText == "F2")
-			saveGame();
+			gameSaver.saveGame(gameStage);
 		else
 		if (keyText == "F3")
 			loadGame();
@@ -65,22 +74,9 @@ public class SwingMain extends JFrame implements KeyListener{
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		switch (e.getKeyChar()){
-		case 'a':
-			tryMovePacman(0, -1);
-		break;
-		case 'd':
-			tryMovePacman(0, +1);
-			break;
-		case 'w':
-			tryMovePacman(-1, 0);
-			break;
-		case 's':
-			tryMovePacman(+1, 0);
-			break;
-		case 'q':
-			System.exit(1);
-		}
+		AbstractCommand command = getCommand(e);
+		if (command != null)
+			command.execute();
 		
 		if (gameRules.isGameOver(gameStage))
 			System.exit(1);
@@ -90,45 +86,18 @@ public class SwingMain extends JFrame implements KeyListener{
 		this.repaint();
 	}
 
-	private void tryMovePacman(int dy, int dx) {
-		if (!gameStage.gameMap.isWall(gameStage.pacman.y + dy,  gameStage.pacman.x + dx)){
-			gameStage.pacman.x += dx;
-			gameStage.pacman.y += dy;
-		}		
-	}
-		
-	private GameStage createNewGameStage(){		
-		GameMap gameMap = new GameMap();
-		Pacman pacman = new Pacman(5, 5);
-		Ghost ghosts[] = { new Ghost(20, 7, 0, 1), new Ghost(14, 10, 1, 0) };
-
-		return new GameStage(gameMap, pacman, ghosts);
-	}
+	private AbstractCommand getCommand(KeyEvent e) {
+		return commands.get(e.getKeyChar());
+	}		
 	
-	private GameStage loadGameStage(){
-		try {
-			String fileContent = new String(Files.readAllBytes(Paths.get("game.save")));
-			return new GameStageSerializer().deserialize(fileContent);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
-	private void saveGame(){
-		try {
-			Files.write(Paths.get("game.save"), new GameStageSerializer().serialize(gameStage).getBytes());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void loadGame(){
-		GameStage loadedGameStage = loadGameStage();
+	public void loadGame(){
+		GameStage loadedGameStage = gameSaver.loadGameStage();
 		if (loadedGameStage != null)
 			this.gameStage = loadedGameStage;
 		
 		repaint();
 	}
+	
 	
 	public static void main(String args[]) throws Exception{
 		

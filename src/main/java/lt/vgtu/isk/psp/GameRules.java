@@ -1,6 +1,8 @@
 package lt.vgtu.isk.psp;
 public class GameRules {
 
+	private IRandomFactor randomFactor = new RandomFactor();
+	
 	public GameRules(){
 	}
 
@@ -18,7 +20,7 @@ public class GameRules {
 	}
 
 	private void moveGhost(GameMap gameMap, Ghost ghost) {
-		if (randomChangeHappened())
+		if (getRandomFactor().randomChangeHappened())
 			ghost.swapMovementVectors();
 
 		if (gameMap.isWall(ghost.y+ghost.dy, ghost.x+ghost.dx))
@@ -26,8 +28,13 @@ public class GameRules {
 		else
 			ghost.move();
 	}
-	
-	private static boolean randomChangeHappened() {
-		return Math.random()*10 > 8;
+
+	public IRandomFactor getRandomFactor() {
+		return randomFactor;
 	}
+
+	public void setRandomFactor(IRandomFactor randomFactor) {
+		this.randomFactor = randomFactor;
+	}
+
 }
