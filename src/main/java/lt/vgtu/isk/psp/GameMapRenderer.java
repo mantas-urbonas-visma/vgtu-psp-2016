@@ -1,22 +1,21 @@
+package lt.vgtu.isk.psp;
 public class GameMapRenderer {
 	
-	GameMap gameMap;
-	Pacman pacman;
-	Ghost[] ghosts;
+	GameStage gameStage;
 	
-	public GameMapRenderer(GameMap gameMap, Pacman pacman, Ghost[] ghosts){
-		this.gameMap = gameMap;
-		this.pacman = pacman;
-		this.ghosts = ghosts;
+	public GameMapRenderer(GameStage gameStage){
+		this.gameStage = gameStage;
 	}
 	
 	public void render() {
+		GameMap gameMap = gameStage.gameMap;
+		
 		for (int y=0; y<gameMap.getHeight(); y++){
 			for (int x=0; x<gameMap.getWidth(); x++){
 				if (gameMap.isWall(y, x)){
 					drawWall();
 				}else
-				if (y==pacman.y && x == pacman.x){
+				if (y==gameStage.pacman.y && x == gameStage.pacman.x){
 					drawPacman();
 				}
 				else
@@ -32,8 +31,8 @@ public class GameMapRenderer {
 	}
 	
 	private boolean isGhost(int x, int y) {
-		for (int i=0; i<ghosts.length; i++)
-			if (ghosts[i].x == x && ghosts[i].y == y)
+		for (Ghost ghost: gameStage.ghosts)
+			if (ghost.x == x && ghost.y == y)
 				return true;
 		
 		return false;

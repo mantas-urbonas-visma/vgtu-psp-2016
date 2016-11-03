@@ -1,3 +1,4 @@
+package lt.vgtu.isk.psp;
 public class Ghost {
 	int x;
 	int y;

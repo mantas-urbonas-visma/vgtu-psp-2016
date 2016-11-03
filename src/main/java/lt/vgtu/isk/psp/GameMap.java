@@ -1,6 +1,10 @@
+package lt.vgtu.isk.psp;
+
 public class GameMap {
 
-	int MATRIX[][] = {
+	int matrix[][];
+	
+	private static final int DEFAULT_MATRIX[][]= {
 			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
 			{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,},
 			{1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,},
@@ -27,15 +31,23 @@ public class GameMap {
 			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
 	};
 
+	public GameMap(){
+		this(DEFAULT_MATRIX);
+	}
+
+	public GameMap(int matrix[][]){
+		this.matrix = matrix;
+	}
+	
 	public int getHeight() {
-		return MATRIX.length;
+		return matrix.length;
 	}
 
 	public int getWidth() {
-		return MATRIX[0].length;
+		return matrix[0].length;
 	}
 
 	public boolean isWall(int y, int x) {
-		return MATRIX[y][x] == 1;
+		return matrix[y][x] == 1;
 	}
 }
